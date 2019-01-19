@@ -1,3 +1,1 @@
-# NCAA-Data
-
-[Super useful package](https://github.com/lbenz730/ncaahoopR)
+# [NCAA-Flexdashboard](https://github.com/lbenz730/ncaahoopR)
