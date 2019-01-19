@@ -1,0 +1,124 @@
+---
+title: "NCAA Data"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: spacelab
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+#https://github.com/ries9112/ncaahoopR
+library(flexdashboard)
+library(ncaahoopR)
+library(DT)
+library(plotly)
+
+#Was it working ok without these two lines added?
+# library(devtools)
+# devtools::install_github("lbenz730/ncaahoopR")
+```
+
+Schedule by Day
+=======================================================================
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+### Select Date
+
+```{r}
+selectInput("yearSelect","Year",choices = c(2019,2018,2017,2016,2015,2014,2013,2012,2011,2010), selected = 2018)
+sliderInput("monthSelect","Month",min =1,max=12,value=1)
+sliderInput("daySelect","Day",min =1,max=31,value=1)
+```
+
+**Find specific Game ID's and copy and paste the value into the third page of the application "Visualize by GameID"**
+
+https://github.com/lbenz730/ncaahoopR
+
+Output {}
+-----------------------------------------------------------------------
+
+### Schedule
+
+```{r}
+renderDataTable({
+get_master_schedule(input$yearSelect,input$monthSelect,input$daySelect)
+})
+```
+
+Schedule by Team
+=======================================================================
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+### Inputs
+
+```{r}
+selectInput("teamSelect","Select Team To Show Schedule For",choices = c('Albany','Bingamton','Hartford','Maine','New Hampshire','Stony Brook','UMBC','UMass Lowell','Vermont','Cincinnati','East Carolina','Houston','Memphis','SMU','South Florida','Temple','Tulane','Tulsa','UCF','UConn','Wichita State','Davidson','Dayton','Duquesne','Fordham','George Mason','George Washington','La Salle','Rhode Island','Richmond',"Saint Joseph's",'Saint Louis','St.Bonaventure','UMass','VCU','Boston College','Clemson','Duke','Florida State','Georgia Tech','Louisville','Miami','NC State','North Carolina','Notre Dame','Pittsburgh','Syracuse','Virginia Tech','Wake Forest','Florida Gulf','Jacksonville','Kennesaw State','Liberty','Lipscomb','NJIT','North Alabama','North Florida','Stetson','Baylor','Iowa State','Kansas State','Oklahoma','Oklahoma State', 'TCU','Texas','Texas Tech', 'West Virginia','Butler', 'Creighton', 'DePaul', 'Georgetown', 'Marquette', 'Providence','Seton Hall',"St. John's",'Villanova','Xavier','Eastern Washington','Idaho State','Idaho','Montana','Montana State','Northern Arizona','Northern Colorado','Portland State','Sacramento State','Southern Utah','Weber State','Campbell','Charleston','Gardner-Webb','Hampton','High Point','Longwood','Presbyterian','Radford','South Carolina','UNC','Winthrop','Illinois','Indiana','Iowa','Maryland','Michigan State','Michigan','Minnesota','Nebraska','Northwestern','Ohio State','Penn State','Purdue','Rutger','Wisconsin','CSU Fullerton','CSU Northridge','Cal Poly',"Hawai'i",'Long Beach','UC Davis','UC Irvine','UC Riverside','UC Santa Barbara','Charleston','Delaware','Drexel','Elon','Hofstra','James Madison','Northeastern','Towson','UNC Wilmington','William & Mary','Charlotte','Florida Atlantic','Florida International','Louisianta Tech','Marshall','Middle Tennessee','North Texas','Old Dominion','Rice Owls','Southern Miss','UAB','UTEP','UTSA','Western Kentucky','Cleveland State','Detroit','Green Bay','UIPUI','Milwaukee','Northern Kentucky','Oakland','UIC','Wright State',' Youngstown State','Brown','Columbia','Cornell','Dartmouth','Harvard','Pennsylvania','Princeton','Yale','Canisius','Fairfield','Iona','Manhattan','Marist','Monmouth','Niagara','Quinnipiac','Rider',"Saint Peter's",'Siena','Akron','Ball State','Bowling Green','Buffalo','Central Michigan','Eastern Michigan','Kent State','Miami (OH)','Northern Illinois','Ohio','Toledo','Western Michigan','Bethune-Cookman','Coppin State','Delaware State','Florida A&M','Howard','Maryland-Eastern','Morgan State','Norfolk State','North Carolina','Savannah State','South Carolina State','Bradley','Drake','Evansville','Illinois State','Indiana State','Loyola-Chicago','Missouri State','Northern Iowa','Southern Illinois','Valparaiso','Air Force','Boise State','Colorado','Colorado State','Fresno State','Nevada','New Mexico','San Diego State','Sano José','UNLV','Utah State','Wyoming','Bryant','Central Connecticut','Fairleigh Dickinson','LIU Brooklyn','Robert Morris','Sacred Heart','Wagner','Austin Peay','Belmont','Eastern Illinois','Eastern Kentucky','Jacksonville State','Morehead State','Murray State','SIU-Edwardsville','Tennessee State','Tennessee Tech','UT Martin','Arizona State','Arizona','California','Oregon','Oregon State','Stanford','UCLA','USC','Utah','Washington','Washington State','American','Army','Boston University','Bucknell','Colgate','Holy Cross','Lafayette','Lehigh','Loyola','Navy Midshipmen','Alabama','Arkansas','Auburn','Florida','Georgia','Kentucky','LSU','Mississippi State','Missouri','Ole Miss','South Carolina','Tennessee','Texas A&M','Vanderbilt','Cattanooga','East Tennessee State','Furman','Mercer','Samford','The Citadel','UNC Greensboro','VMI','Western Carolina','Wofford','Abilene Christian','Central Arkansas','Houston Baptist','Incarnate Word','Lamar','McNeese','New Orleans','Nicholls','Northwestern State','SE Louisiana','Sam Houston State','Alabama A&M','Alabama State','Alcorn State','Arkansas-Pine Bluff','Grambling','Jackson State','Mississippi Valley State','Prairie View A&M','Southern Jaguars','Texas Southern','Denver','North Dakota','North Dakota State','Omaha','Oral Roberts','Purdue Fort Wayne','South Dakota','South Dakota State','Western Illinois','Appalachian State','Arkanasas State',' Coastal Carolina','Georgia Southern','Georgia State','Little Rock','South Alabama','Texas State','Troy','UL Monroe','UT Arlington','BYU','Gonzaga','Loyola Marymount','Pacific','Pepperdine','Portland',"Saint Mary's",'San Diego','San Francisco','Santa Clara','CSU Barkesfield','California Baptist','Chicago State','Grand Canyon','New Mexico State','Seatlle','UMKC','UT Rio Grande Valley','Utah Valley'), selected = 'Duke' )
+```
+
+**Find specific Game ID's and copy and paste the value into the third page of the application "Visualize by GameID"**
+
+Output {.tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Schedule
+
+```{r}
+renderDataTable({
+  (get_schedule(input$teamSelect))
+})
+```
+
+Visualize by GameID
+=======================================================================
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+### Inputs
+
+```{r}
+textInput('gameID', 'Enter the Game ID',value = "401025888")
+```
+
+Copy and paste a different Game ID from one of the other two pages of the application
+
+https://github.com/lbenz730/ncaahoopR
+
+Output {.tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Win Probability Chart
+
+```{r}
+renderPlot({
+  wp_chart(game_id = input$gameID, home_col = "navy", away_col = "goldenrod1")
+})
+```
+
+### Win Probability Interactive
+
+```{r}
+renderPlotly({
+  ggplotly( gg_wp_chart(game_id = input$gameID, home_col = "gray", away_col = "orange") )
+})
+```
+
+### Game Flow 
+
+```{r}
+renderPlotly({
+  ggplotly( game_flow(game_id = input$gameID, home_col = "blue", away_col = "navy") )
+})
+```
+
+
+
+
+
