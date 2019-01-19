@@ -1,1 +1,1 @@
-# [NCAA-Flexdashboard](https://github.com/lbenz730/ncaahoopR)
+# [NCAA package](https://github.com/lbenz730/ncaahoopR)
